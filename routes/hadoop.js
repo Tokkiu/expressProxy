@@ -22,7 +22,7 @@ router.get('/', function(req, res, next) {
             // console.log(result);
             var reg = /\/\/datanode\d{1,}\:/g;
             var m = result.toString().replace(reg,function(word){
-                return '//localhost:3000/datanode/'+word.match(/\d{1,}/)[0]+'/';
+                return '/datanode/'+word.match(/\d{1,}/)[0]+'/';
             });
             var reg = /href\=\"\/\w[^static]/g;
             var n = m.replace(reg,function(word){
@@ -53,7 +53,7 @@ router.get('/*', function(req, res, next) {
             // console.log(result);
             var reg = /\/\/datanode\d{1,}\:/g;
             var m = result.toString().replace(reg,function(word){
-                return '//localhost:3000/datanode/'+word.match(/\d{1,}/)[0]+'/';
+                return '/datanode/'+word.match(/\d{1,}/)[0]+'/';
             });
             var reg = /href\=\"\/\w[^static]/g;
             var n = m.replace(reg,function(word){
