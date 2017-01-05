@@ -1,0 +1,599 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <meta http-equiv="X-UA-Compatible" content="IE=8">
+  <meta http-equiv="Content-type" content="text/html; charset=UTF-8">
+  <style type="text/css">
+    #nodes_paginate span {font-weight:normal}
+    #nodes .progress {width:8em}
+    #nodes_processing {top:-1.5em; font-size:1em;
+      color:#000; background:rgba(255, 255, 255, 0.8)}
+    #nodes .healthStatus {width:10em}
+    #nodes .healthReport {width:10em}
+  </style>
+  <title>
+    Nodes of the cluster
+  </title>
+  <link rel="stylesheet" href="/hadoop/static/yarn.css">
+  <style type="text/css">
+    #layout { height: 100%; }
+    #layout thead td { height: 3em; }
+    #layout #navcell { width: 11em; padding: 0 1em; }
+    #layout td.content { padding-top: 0 }
+    #layout tbody { vertical-align: top; }
+    #layout tfoot td { height: 4em; }
+  </style>
+  <link rel="stylesheet" href="/hadoop/static/jquery/themes-1.9.1/base/jquery-ui.css">
+  <link rel="stylesheet" href="/hadoop/static/dt-1.9.4/css/jui-dt.css">
+  <script type="text/javascript" src="/static/jquery/jquery-1.8.2.min.js">
+  </script>
+  <script type="text/javascript" src="/static/jquery/jquery-ui-1.9.1.custom.min.js">
+  </script>
+  <script type="text/javascript" src="/static/dt-1.9.4/js/jquery.dataTables.min.js">
+  </script>
+  <script type="text/javascript" src="/static/yarn.dt.plugins.js">
+  </script>
+  <script type="text/javascript" src="/static/dt-sorting/natural.js">
+  </script>
+  <style type="text/css">
+    #jsnotice { padding: 0.2em; text-align: center; }
+    .ui-progressbar { height: 1em; min-width: 5em }
+  </style>
+  <script type="text/javascript">
+    $(function() {
+      $('#nav').accordion({autoHeight:false, active:0});
+    nodesDataTable =  $('#nodes').dataTable({bStateSave : true, "fnStateSave": function (oSettings, oData) {  data = oData.aoSearchCols;for(i =0 ; i < data.length; i ++) {data[i].sSearch = ""} sessionStorage.setItem( oSettings.sTableId, JSON.stringify(oData) ); }, "fnStateLoad": function (oSettings) { return JSON.parse( sessionStorage.getItem(oSettings.sTableId) );}, bJQueryUI:true, sPaginationType: 'full_numbers', iDisplayLength:20, aLengthMenu:[20, 40, 60, 80, 100], aoColumnDefs: [{'bSearchable': false, 'aTargets': [ 7 ]}, {'sType': 'title-numeric', 'bSearchable': false, 'aTargets': [ 8, 9 ] }, {'sType': 'title-numeric', 'aTargets': [ 5 ]}]}).fnSetFilteringDelay(188);
+    });
+  </script>
+  <div id="jsnotice" class="ui-state-error">
+    This page will not function without javascript enabled. Please enable javascript on your browser.
+  </div>
+  <script type="text/javascript">
+    $('#jsnotice').hide();
+  </script>
+  <table id="layout" class="ui-widget-content">
+    <thead>
+      <tr>
+        <td colspan="2">
+          <div id="header" class="ui-widget">
+            <div id="user">
+              Logged in as: dr.who
+            </div>
+            <div id="logo">
+              <img src="/static/hadoop-st.png">
+            </div>
+            <h1>
+              Nodes of the cluster
+            </h1>
+          </div>
+        </td>
+      </tr>
+    </thead>
+    <tfoot>
+      <tr>
+        <td colspan="2">
+          <div id="footer" class="ui-widget">
+          </div>
+        </td>
+      </tr>
+    </tfoot>
+    <tbody>
+      <tr>
+        <td id="navcell">
+          <div id="nav">
+            <h3>
+              Cluster
+            </h3>
+            <ul>
+              <li>
+                <a href="/hadoop/cluster/cluster">About</a>
+              <li>
+                <a href="/hadoop/cluster/nodes">Nodes</a>
+              <li>
+                <a href="/hadoop/cluster/nodelabels">Node Labels</a>
+              <li>
+                <a href="/hadoop/cluster/apps">Applications</a>
+                <ul>
+                  <li>
+                  <li>
+                    <a href="/hadoop/cluster/apps/NEW">NEW</a>
+                  <li>
+                    <a href="/hadoop/cluster/apps/NEW_SAVING">NEW_SAVING</a>
+                  <li>
+                    <a href="/hadoop/cluster/apps/SUBMITTED">SUBMITTED</a>
+                  <li>
+                    <a href="/hadoop/cluster/apps/ACCEPTED">ACCEPTED</a>
+                  <li>
+                    <a href="/hadoop/cluster/apps/RUNNING">RUNNING</a>
+                  <li>
+                    <a href="/hadoop/cluster/apps/FINISHED">FINISHED</a>
+                  <li>
+                    <a href="/hadoop/cluster/apps/FAILED">FAILED</a>
+                  <li>
+                    <a href="/hadoop/cluster/apps/KILLED">KILLED</a>
+                </ul>
+              <li>
+                <a href="/hadoop/cluster/scheduler">Scheduler</a>
+            </ul>
+            <h3>
+              Tools
+            </h3>
+            <ul>
+              <li>
+                <a href="/hadoop/conf">Configuration</a>
+              <li>
+                <a href="/hadoop/logs">Local logs</a>
+              <li>
+                <a href="/hadoop/stacks">Server stacks</a>
+              <li>
+                <a href="/hadoop/jmx?qry=Hadoop:*">Server metrics</a>
+            </ul>
+          </div>
+        </td>
+        <td class="content">
+          <style type="text/css">
+            .metrics {margin-bottom:5px}
+          </style>
+          <div class="metrics">
+            <h3>
+              Cluster Metrics
+            </h3>
+            <table id="metricsoverview">
+              <thead class="ui-widget-header">
+                <tr>
+                  <th class="ui-state-default">
+                    Apps Submitted
+                  </th>
+                  <th class="ui-state-default">
+                    Apps Pending
+                  </th>
+                  <th class="ui-state-default">
+                    Apps Running
+                  </th>
+                  <th class="ui-state-default">
+                    Apps Completed
+                  </th>
+                  <th class="ui-state-default">
+                    Containers Running
+                  </th>
+                  <th class="ui-state-default">
+                    Memory Used
+                  </th>
+                  <th class="ui-state-default">
+                    Memory Total
+                  </th>
+                  <th class="ui-state-default">
+                    Memory Reserved
+                  </th>
+                  <th class="ui-state-default">
+                    VCores Used
+                  </th>
+                  <th class="ui-state-default">
+                    VCores Total
+                  </th>
+                  <th class="ui-state-default">
+                    VCores Reserved
+                  </th>
+                  <th class="ui-state-default">
+                    Active Nodes
+                  </th>
+                  <th class="ui-state-default">
+                    Decommissioned Nodes
+                  </th>
+                  <th class="ui-state-default">
+                    Lost Nodes
+                  </th>
+                  <th class="ui-state-default">
+                    Unhealthy Nodes
+                  </th>
+                  <th class="ui-state-default">
+                    Rebooted Nodes
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="ui-widget-content">
+                <tr>
+                  <td>
+                    3
+                  </td>
+                  <td>
+                    0
+                  </td>
+                  <td>
+                    0
+                  </td>
+                  <td>
+                    3
+                  </td>
+                  <td>
+                    0
+                  </td>
+                  <td>
+                    0 B
+                  </td>
+                  <td>
+                    1.14 TB
+                  </td>
+                  <td>
+                    0 B
+                  </td>
+                  <td>
+                    0
+                  </td>
+                  <td>
+                    288
+                  </td>
+                  <td>
+                    0
+                  </td>
+                  <td>
+                    <a href="/hadoop/cluster/nodes">6</a>
+                  </td>
+                  <td>
+                    <a href="/hadoop/cluster/nodes/decommissioned">0</a>
+                  </td>
+                  <td>
+                    <a href="/hadoop/cluster/nodes/lost">0</a>
+                  </td>
+                  <td>
+                    <a href="/hadoop/cluster/nodes/unhealthy">0</a>
+                  </td>
+                  <td>
+                    <a href="/hadoop/cluster/nodes/rebooted">0</a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <h3>
+              Scheduler Metrics
+            </h3>
+            <table id="schedulermetricsoverview">
+              <thead class="ui-widget-header">
+                <tr>
+                  <th class="ui-state-default">
+                    Scheduler Type
+                  </th>
+                  <th class="ui-state-default">
+                    Scheduling Resource Type
+                  </th>
+                  <th class="ui-state-default">
+                    Minimum Allocation
+                  </th>
+                  <th class="ui-state-default">
+                    Maximum Allocation
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="ui-widget-content">
+                <tr>
+                  <td>
+                    Capacity Scheduler
+                  </td>
+                  <td>
+                    [MEMORY]
+                  </td>
+                  <td>
+                    &lt;memory:8192, vCores:2&gt;
+                  </td>
+                  <td>
+                    &lt;memory:8192, vCores:2&gt;
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <table id="nodes">
+            <thead>
+              <tr>
+                <th class="nodelabels">
+                  Node Labels
+                </th>
+                <th class="rack">
+                  Rack
+                </th>
+                <th class="state">
+                  Node State
+                </th>
+                <th class="nodeaddress">
+                  Node Address
+                </th>
+                <th class="nodehttpaddress">
+                  Node HTTP Address
+                </th>
+                <th class="lastHealthUpdate">
+                  Last health-update
+                </th>
+                <th class="healthReport">
+                  Health-report
+                </th>
+                <th class="containers">
+                  Containers
+                </th>
+                <th class="mem">
+                  Mem Used
+                </th>
+                <th class="mem">
+                  Mem Avail
+                </th>
+                <th class="vcores">
+                  VCores Used
+                </th>
+                <th class="vcores">
+                  VCores Avail
+                </th>
+                <th class="nodeManagerVersion">
+                  Version
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  
+                </td>
+                <td>
+                  /default-rack
+                </td>
+                <td>
+                  RUNNING
+                </td>
+                <td>
+                  datanode4:8043
+                </td>
+                <td>
+                  <a href="//localhost:3000/datanode/4/8042">datanode4:8042</a>
+                </td>
+                <td>
+                  <br title="1483585229315">
+                  Wed Jan 04 22:00:29 -0500 2017
+                </td>
+                <td>
+                  
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  <br title="0">
+                  0 B
+                </td>
+                <td>
+                  <br title="200000">
+                  195.31 GB
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  48
+                </td>
+                <td>
+                  2.7.3
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  
+                </td>
+                <td>
+                  /default-rack
+                </td>
+                <td>
+                  RUNNING
+                </td>
+                <td>
+                  datanode6:8043
+                </td>
+                <td>
+                  <a href="//localhost:3000/datanode/6/8042">datanode6:8042</a>
+                </td>
+                <td>
+                  <br title="1483585236066">
+                  Wed Jan 04 22:00:36 -0500 2017
+                </td>
+                <td>
+                  
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  <br title="0">
+                  0 B
+                </td>
+                <td>
+                  <br title="200000">
+                  195.31 GB
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  48
+                </td>
+                <td>
+                  2.7.3
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  
+                </td>
+                <td>
+                  /default-rack
+                </td>
+                <td>
+                  RUNNING
+                </td>
+                <td>
+                  datanode3:8043
+                </td>
+                <td>
+                  <a href="//localhost:3000/datanode/3/8042">datanode3:8042</a>
+                </td>
+                <td>
+                  <br title="1483585225432">
+                  Wed Jan 04 22:00:25 -0500 2017
+                </td>
+                <td>
+                  
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  <br title="0">
+                  0 B
+                </td>
+                <td>
+                  <br title="200000">
+                  195.31 GB
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  48
+                </td>
+                <td>
+                  2.7.3
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  
+                </td>
+                <td>
+                  /default-rack
+                </td>
+                <td>
+                  RUNNING
+                </td>
+                <td>
+                  datanode1:8043
+                </td>
+                <td>
+                  <a href="//localhost:3000/datanode/1/8042">datanode1:8042</a>
+                </td>
+                <td>
+                  <br title="1483585205395">
+                  Wed Jan 04 22:00:05 -0500 2017
+                </td>
+                <td>
+                  
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  <br title="0">
+                  0 B
+                </td>
+                <td>
+                  <br title="200000">
+                  195.31 GB
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  48
+                </td>
+                <td>
+                  2.7.3
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  
+                </td>
+                <td>
+                  /default-rack
+                </td>
+                <td>
+                  RUNNING
+                </td>
+                <td>
+                  datanode5:8043
+                </td>
+                <td>
+                  <a href="//localhost:3000/datanode/5/8042">datanode5:8042</a>
+                </td>
+                <td>
+                  <br title="1483585232935">
+                  Wed Jan 04 22:00:32 -0500 2017
+                </td>
+                <td>
+                  
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  <br title="0">
+                  0 B
+                </td>
+                <td>
+                  <br title="200000">
+                  195.31 GB
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  48
+                </td>
+                <td>
+                  2.7.3
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  
+                </td>
+                <td>
+                  /default-rack
+                </td>
+                <td>
+                  RUNNING
+                </td>
+                <td>
+                  datanode2:8043
+                </td>
+                <td>
+                  <a href="//localhost:3000/datanode/2/8042">datanode2:8042</a>
+                </td>
+                <td>
+                  <br title="1483585221729">
+                  Wed Jan 04 22:00:21 -0500 2017
+                </td>
+                <td>
+                  
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  <br title="0">
+                  0 B
+                </td>
+                <td>
+                  <br title="200000">
+                  195.31 GB
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  48
+                </td>
+                <td>
+                  2.7.3
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</html>

@@ -7,6 +7,10 @@ var bodyParser = require('body-parser');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
+var liye = require('./routes/liye');
+var static = require('./routes/static');
+var hadoop = require('./routes/hadoop');
+var datanode = require('./routes/datanode');
 
 var app = express();
 
@@ -24,6 +28,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/users', users);
+app.use('/liye',liye);
+app.use('/hadoop',hadoop);
+app.use('/static',static);
+app.use('/datanode',datanode);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
